@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-
-// Versi lokal: semua data disimpan hanya di memori (useState).
-// Refresh halaman akan menghapus semua data.
+import './ProductApp.css'; // Import CSS baru
 
 function ProductApp() {
   const [products, setProducts] = useState([]);
@@ -25,7 +23,7 @@ function ProductApp() {
     e.preventDefault();
     if (!validate(newProduct)) return;
 
-    const id = Date.now(); // id sederhana
+    const id = Date.now();
     const product = {
       id,
       name: newProduct.name.trim(),
@@ -58,76 +56,82 @@ function ProductApp() {
   };
 
   const handleDeleteProduct = (id) => {
-    if (!window.confirm('Yakin ingin menghapus produk ini?')) return;
+    if (!window.confirm('Hapus produk ini?')) return;
     setProducts(prev => prev.filter(p => p.id !== id));
-    if (editingProduct && editingProduct.id === id) setEditingProduct(null);
+    if (editingProduct?.id === id) setEditingProduct(null);
   };
 
-  const formatPrice = (n) => Number(n).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formatPrice = (n) => Number(n).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+  // Helper untuk handle input change agar kode lebih ringkas
+  const handleChange = (e, field) => {
+    const val = e.target.value;
+    if (editingProduct) {
+      setEditingProduct({ ...editingProduct, [field]: val });
+    } else {
+      setNewProduct({ ...newProduct, [field]: val });
+    }
+  };
+
+  const currentData = editingProduct || newProduct;
 
   return (
-    <div style={{ fontFamily: 'Inter, Arial, sans-serif', padding: 20, maxWidth: 980, margin: '0 auto' }}>
-      <h1 style={{ marginBottom: 6 }}>Manajemen Produk (Cache Sementara)</h1>
-      <p style={{ marginTop: 0, color: '#4b5563' }}>Data hanya di memori. Refresh akan menghapus semua.</p>
+    <div className="app-container">
+      <h1 className="header" style={{ marginBottom: 6 }}>Manajemen Produk</h1>
+      <p style={{ marginTop: 0, color: '#4b5563' }}>Data sementara (Reset saat refresh)</p>
 
-      {error && <div style={{ color: 'white', background: '#ef4444', padding: 10, borderRadius: 8, marginBottom: 12 }}>{error}</div>}
+      {error && <div className="error-msg">{error}</div>}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-        <div style={{ background: 'white', padding: 16, borderRadius: 12, boxShadow: '0 6px 18px rgba(12,18,30,0.06)' }}>
-          <h2 style={{ marginTop: 0 }}>{editingProduct ? 'Edit Produk' : 'Tambah Produk Baru'}</h2>
+      <div className="main-grid">
+        {/* Form Section */}
+        <div className="card">
+          <h2 style={{ marginTop: 0 }}>{editingProduct ? 'Edit Produk' : 'Tambah Produk'}</h2>
 
           <form onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct}>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+            <div className="form-row">
               <input
+                className="input-field input-name"
                 placeholder="Nama produk"
-                value={editingProduct ? editingProduct.name : newProduct.name}
-                onChange={(e) => editingProduct
-                  ? setEditingProduct({ ...editingProduct, name: e.target.value })
-                  : setNewProduct({ ...newProduct, name: e.target.value })}
-                style={{ flex: 1, padding: 10, borderRadius: 8, border: '1px solid #e6eef8' }}
+                value={currentData.name}
+                onChange={(e) => handleChange(e, 'name')}
                 required
               />
               <input
+                className="input-field input-price"
                 placeholder="Harga"
                 type="number"
                 step="0.01"
-                value={editingProduct ? editingProduct.price : newProduct.price}
-                onChange={(e) => editingProduct
-                  ? setEditingProduct({ ...editingProduct, price: e.target.value })
-                  : setNewProduct({ ...newProduct, price: e.target.value })}
-                style={{ width: 140, padding: 10, borderRadius: 8, border: '1px solid #e6eef8' }}
+                value={currentData.price}
+                onChange={(e) => handleChange(e, 'price')}
                 required
               />
             </div>
 
             <input
+              className="input-field input-full"
               placeholder="URL gambar (opsional)"
-              value={editingProduct ? editingProduct.image : newProduct.image}
-              onChange={(e) => editingProduct
-                ? setEditingProduct({ ...editingProduct, image: e.target.value })
-                : setNewProduct({ ...newProduct, image: e.target.value })}
-              style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e6eef8', marginBottom: 8 }}
+              value={currentData.image}
+              onChange={(e) => handleChange(e, 'image')}
             />
 
             <textarea
+              className="input-field input-full"
               placeholder="Deskripsi (opsional)"
-              value={editingProduct ? editingProduct.desc : newProduct.desc}
-              onChange={(e) => editingProduct
-                ? setEditingProduct({ ...editingProduct, desc: e.target.value })
-                : setNewProduct({ ...newProduct, desc: e.target.value })}
-              style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e6eef8', minHeight: 80 }}
+              value={currentData.desc}
+              onChange={(e) => handleChange(e, 'desc')}
+              style={{ minHeight: 80 }}
             />
 
-            <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
-              <button type="submit" style={{ padding: '10px 14px', borderRadius: 8, background: '#2563eb', color: 'white', border: 'none' }}>
-                {editingProduct ? 'Simpan Perubahan' : 'Tambah Produk'}
+            <div className="btn-group">
+              <button type="submit" className="btn btn-primary">
+                {editingProduct ? 'Simpan' : 'Tambah'}
               </button>
               {editingProduct ? (
-                <button type="button" onClick={() => setEditingProduct(null)} style={{ padding: '10px 14px', borderRadius: 8 }}>
-                  Batal Edit
+                <button type="button" onClick={() => setEditingProduct(null)} className="btn btn-secondary">
+                  Batal
                 </button>
               ) : (
-                <button type="button" onClick={resetForm} style={{ padding: '10px 14px', borderRadius: 8 }}>
+                <button type="button" onClick={resetForm} className="btn btn-secondary">
                   Reset
                 </button>
               )}
@@ -135,41 +139,48 @@ function ProductApp() {
           </form>
         </div>
 
-        <div style={{ background: 'white', padding: 16, borderRadius: 12, boxShadow: '0 6px 18px rgba(12,18,30,0.06)' }}>
+        {/* Summary Section */}
+        <div className="card">
           <h2 style={{ marginTop: 0 }}>Ringkasan</h2>
           <div style={{ fontSize: 28, fontWeight: 700 }}>{products.length}</div>
-          <p style={{ color: '#6b7280', marginTop: 8 }}>Produk tersimpan hanya di memori saat halaman aktif.</p>
+          <p style={{ color: '#6b7280', marginTop: 8 }}>Total Produk Aktif</p>
         </div>
       </div>
 
+      {/* Product List */}
       <div style={{ marginTop: 20 }}>
         <h2>Daftar Produk</h2>
 
         {products.length === 0 ? (
           <div style={{ padding: 18, borderRadius: 12, border: '1px dashed #e6eef8', color: '#6b7280' }}>
-            Belum ada produk. Tambahkan produk lewat form.
+            Belum ada produk. Silakan tambah data baru.
           </div>
         ) : (
-          <div style={{ display: 'grid', gap: 12, marginTop: 8 }}>
+          <div className="product-list">
             {products.map((p) => (
-              <div key={p.id} style={{ display: 'flex', gap: 12, alignItems: 'center', background: 'white', padding: 12, borderRadius: 10, border: '1px solid #eef4ff' }}>
-                <div style={{ width: 84, height: 84, borderRadius: 8, overflow: 'hidden', background: '#f1f9ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {p.image ? <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e)=>{e.currentTarget.style.display='none'}} /> : <svg width="48" height="48" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="4" fill="#eef6ff"/><path d="M7 14l2.5-3L12 16l3.5-4L17 14" stroke="#8bb8ff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              <div key={p.id} className="product-item">
+                <div className="product-img">
+                  {p.image ? (
+                    <img src={p.image} alt={p.name} onError={(e)=>{e.currentTarget.style.display='none'}} />
+                  ) : (
+                    <span style={{ fontSize: 24 }}>📦</span>
+                  )}
                 </div>
 
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                <div className="product-info">
+                  <div className="product-header">
                     <div>
                       <div style={{ fontWeight: 700 }}>{p.name}</div>
-                      <div style={{ color: '#6b7280', fontSize: 13 }}>#{p.id} • {new Date(p.createdAt).toLocaleString()}</div>
+                      <div style={{ color: '#6b7280', fontSize: 13 }}>{new Date(p.createdAt).toLocaleDateString()}</div>
                     </div>
                     <div style={{ fontWeight: 700, color: '#0b4a7a' }}>Rp {formatPrice(p.price)}</div>
                   </div>
-                  {p.desc && <div style={{ marginTop: 8, color: '#374151' }}>{p.desc}</div>}
+                  
+                  {p.desc && <div style={{ marginTop: 4, color: '#374151', fontSize: '0.9em' }}>{p.desc}</div>}
 
-                  <div style={{ marginTop: 10 }}>
-                    <button onClick={() => handleStartEdit(p)} style={{ padding: '6px 10px', borderRadius: 8 }}>Edit</button>
-                    <button onClick={() => handleDeleteProduct(p.id)} style={{ padding: '6px 10px', borderRadius: 8, marginLeft: 8, background: '#ef4444', color: 'white', border: 'none' }}>Hapus</button>
+                  <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
+                    <button onClick={() => handleStartEdit(p)} className="btn btn-edit" style={{ padding: '6px 12px', fontSize: '0.9em' }}>Edit</button>
+                    <button onClick={() => handleDeleteProduct(p.id)} className="btn btn-danger" style={{ padding: '6px 12px', fontSize: '0.9em' }}>Hapus</button>
                   </div>
                 </div>
               </div>

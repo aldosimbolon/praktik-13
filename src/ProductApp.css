@@ -1,0 +1,144 @@
+/* src/ProductApp.css */
+.app-container {
+  font-family: 'Inter', Arial, sans-serif;
+  padding: 20px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.error-msg {
+  color: white;
+  background: #ef4444;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+/* Layout utama: 2 kolom di desktop, 1 kolom di mobile */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(12, 18, 30, 0.06);
+  height: fit-content;
+}
+
+/* Form inputs */
+.form-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.input-field {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e6eef8;
+  font-size: 16px; /* Mencegah zoom otomatis di iPhone */
+}
+
+.input-name {
+  flex: 1;
+}
+
+.input-price {
+  width: 140px;
+}
+
+.input-full {
+  width: 100%;
+  box-sizing: border-box; /* Pastikan padding tidak menambah lebar */
+  margin-bottom: 8px;
+}
+
+.btn-group {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-primary { background: #2563eb; color: white; }
+.btn-secondary { background: #e5e7eb; color: black; }
+.btn-danger { background: #ef4444; color: white; }
+.btn-edit { background: #e5e7eb; color: black; }
+
+/* List Produk */
+.product-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.product-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: white;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #eef4ff;
+}
+
+.product-img {
+  width: 84px;
+  height: 84px;
+  border-radius: 8px;
+  flex-shrink: 0; /* Gambar tidak mengecil */
+  background: #f1f9ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.product-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-info {
+  flex: 1;
+  min-width: 0; /* Mencegah teks meluap */
+}
+
+.product-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap; /* Harga turun ke bawah jika sempit */
+}
+
+/* --- OPTIMALISASI MOBILE --- */
+@media (max-width: 768px) {
+  .main-grid {
+    grid-template-columns: 1fr; /* Ubah ke 1 kolom */
+  }
+
+  .form-row {
+    flex-direction: column; /* Input nama & harga ditumpuk */
+  }
+
+  .input-price {
+    width: 100%; /* Harga lebar penuh */
+  }
+  
+  .btn {
+    flex: 1; /* Tombol lebih mudah ditekan */
+    text-align: center;
+  }
+}
